@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Apro — Manage all spend and cash</title>
+<style>
+  :root{
+    --bg-outer:#eef2f2;
+    --bg-card:#ffffff;
+    --ink:#141414;
+    --ink-soft:#5b6169;
+    --line:#e7e7e7;
+    --pill-bg:#eef2f2;
+    --teal:#7fa7ab;
+    --teal-dark:#20343a;
+    --tan:#cbb6a4;
+    --tan-dark:#241a13;
+    --tan-panel:#e7ddd2;
+    --green-panel:#dcedd8;
+    --green-dark:#173a1f;
+    --pill-green:#dcedd8;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg-outer);
+    font-family: -apple-system, "Inter", "Helvetica Neue", Arial, sans-serif;
+    color:var(--ink);
+    display:flex;
+    justify-content:center;
+    padding:24px;
+  }
+  .frame{
+    width:100%;
+    max-width:1200px;
+    background:#fff;
+    border:1px solid #e2e2e2;
+    border-radius:28px;
+    padding:0 0 48px 0;
+    overflow:hidden;
+  }
+  /* NAV */
+  nav{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 44px;
+    border-bottom:1px solid var(--line);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:700;
+    font-size:19px;
+    letter-spacing:-0.02em;
+  }
+  .brand-mark{
+    width:34px;
+    height:20px;
+    display:inline-flex;
+    align-items:center;
+  }
+  .nav-links{
+    display:flex;
+    gap:34px;
+    font-size:14.5px;
+    color:#1a1a1a;
+  }
+  .nav-links a{
+    text-decoration:none;
+    color:inherit;
+  }
+  .nav-right{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:14px;
+  }
+  .nav-right a.login{
+    color:#1a1a1a;
+    text-decoration:none;
+    margin-right:6px;
+  }
+  .btn{
+    padding:9px 16px;
+    border-radius:8px;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .btn-outline{
+    background:#fff;
+    border:1px solid #d7d7d7;
+    color:#141414;
+  }
+  .btn-dark{
+    background:#161616;
+    color:#fff;
+  }
+
+  /* HERO TEXT */
+  .hero{
+    text-align:center;
+    padding:56px 20px 40px;
+  }
+  .hero h1{
+    font-size:42px;
+    margin:0 0 14px;
+    letter-spacing:-0.02em;
+    font-weight:600;
+  }
+  .hero p{
+    margin:0 auto;
+    max-width:560px;
+    color:var(--ink-soft);
+    font-size:16px;
+    line-height:1.5;
+  }
+
+  /* GRID */
+  .grid{
+    display:grid;
+    grid-template-columns: 1.02fr 0.98fr;
+    gap:28px;
+    padding:0 44px;
+    align-items:start;
+  }
+
+  .pill{
+    display:inline-block;
+    background:var(--pill-bg);
+    color:#2b2b2b;
+    font-size:12.5px;
+    font-weight:500;
+    padding:6px 12px;
+    border-radius:20px;
+    margin:18px 0 10px;
+  }
+  .pill.green{ background:var(--pill-green); }
+
+  h2.title{
+    font-size:24px;
+    margin:2px 0 8px;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  p.desc{
+    color:var(--ink-soft);
+    font-size:15px;
+    line-height:1.5;
+    margin:0;
+  }
+
+  /* LEFT: big teal card */
+  .teal-card{
+    position:relative;
+    background:linear-gradient(135deg,#7fa9ac 0%, #6f9fa3 55%, #628f94 100%);
+    border-radius:18px;
+    height:420px;
+    overflow:hidden;
+  }
+  .teal-texture{
+    position:absolute;
+    top:0;left:0;right:0;bottom:0;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0) 40%),
+      repeating-linear-gradient(200deg, rgba(255,255,255,0.05) 0 2px, transparent 2px 6px);
+  }
+  .concrete{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:110px;
+    background:linear-gradient(180deg,#dfe3e3,#c9cfcf);
+    clip-path: polygon(0 0,100% 0,100% 35%,60% 70%,30% 55%,0 100%);
+    opacity:0.9;
+  }
+  .card-shape{
+    position:absolute;
+    left:36px; top:78px;
+    width:130px; height:290px;
+    background:var(--teal-dark);
+    border-radius:65px;
+  }
+  .card-shape .glyph{
+    position:absolute;
+    top:60px; left:50%;
+    transform:translateX(-50%);
+    width:54px; height:54px;
+    background:#fff;
+    clip-path: polygon(20% 0%, 40% 0%, 50% 30%, 60% 0%, 80% 0%, 65% 40%, 100% 50%, 65% 60%, 80% 100%, 60% 70%, 50% 100%, 40% 70%, 20% 100%, 35% 60%, 0% 50%, 35% 40%);
+  }
+  .card-shape.small{
+    left:190px;
+    width:120px; height:130px;
+    background:#dfe7e7;
+    border-radius:50%;
+  }
+  .card-shape.small .glyph{
+    top:38px;
+    width:36px; height:36px;
+    background:var(--teal-dark);
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+  }
+
+  .accounts-panel{
+    position:absolute;
+    right:20px; bottom:20px;
+    width:230px;
+    background:rgba(120,158,161,0.55);
+    backdrop-filter: blur(6px);
+    border-radius:14px;
+    padding:14px 16px;
+    color:#fff;
+  }
+  .accounts-panel .row-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-size:12px;
+    opacity:0.85;
+    margin-bottom:2px;
+  }
+  .accounts-panel .total{
+    font-size:18px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+  .accounts-panel .sub-row{
+    background:rgba(255,255,255,0.9);
+    color:#141414;
+    border-radius:10px;
+    padding:9px 12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:6px;
+    font-size:13px;
+  }
+  .accounts-panel .sub-row:last-child{margin-bottom:0;}
+  .sub-label{
+    display:block;
+    font-size:11px;
+    color:#8a8a8a;
+    margin-bottom:2px;
+  }
+  .sub-amt{ font-weight:600; }
+  .mini-x{
+    font-size:15px;
+    opacity:0.7;
+  }
+
+  /* RIGHT column stacked */
+  .right-col{ display:flex; flex-direction:column; }
+  .row-two{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+  .tan-card{
+    background:linear-gradient(135deg,#cdb9a7,#c3ad99);
+    border-radius:18px;
+    height:200px;
+    position:relative;
+    overflow:hidden;
+  }
+  .tan-card .tri-oval-wrap{
+    position:absolute; inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+  }
+  .tri-pill{
+    background:var(--tan-dark);
+    border-radius:40px;
+    padding:22px 34px;
+    display:flex;
+    gap:14px;
+  }
+  .tri{
+    width:0;height:0;
+    border-left:13px solid transparent;
+    border-right:13px solid transparent;
+    border-bottom:24px solid #fff;
+  }
+  .tri.outline{
+    border-bottom-color:transparent;
+    position:relative;
+  }
+  .tri.outline::after{
+    content:"";
+    position:absolute;
+    left:-11px; top:2px;
+    width:0;height:0;
+    border-left:11px solid transparent;
+    border-right:11px solid transparent;
+    border-bottom:20px solid transparent;
+    border-top:0;
+    box-sizing:border-box;
+  }
+  .tri.outline{
+    border-left:13px solid transparent;
+    border-right:13px solid transparent;
+    border-bottom:24px solid transparent;
+    outline:none;
+  }
+  .tri-outline-shape{
+    width:26px;height:22px;
+    position:relative;
+  }
+  .tri-outline-shape svg{ display:block; }
+
+  .oval-pill{
+    background:#f1ece5;
+    border-radius:40px;
+    width:96px; height:56px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .oval-pill .glyph{
+    width:26px; height:26px;
+    background:var(--tan-dark);
+    clip-path: polygon(50% 0%, 63% 37%, 100% 50%, 63% 63%, 50% 100%, 37% 63%, 0% 50%, 37% 37%);
+  }
+
+  .balance-card{
+    background:var(--tan-panel);
+    border-radius:18px;
+    height:200px;
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .balance-card .label{
+    font-size:12px;
+    color:#8b8177;
+  }
+  .bars{
+    display:flex;
+    gap:4px;
+    align-items:flex-end;
+    height:26px;
+  }
+  .bars span{
+    width:9px;
+    background:#4a4038;
+    border-radius:2px 2px 0 0;
+  }
+  .bars span.light{ background:#c9bfb2; }
+  .bal-nums{
+    display:flex;
+    justify-content:space-between;
+    font-size:13px;
+  }
+  .bal-nums div b{
+    display:block;
+    font-size:16px;
+    font-weight:600;
+    margin-bottom:2px;
+  }
+  .bal-nums div span{ color:#8b8177; font-size:12px; }
+
+  .row-three{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+    margin-top:6px;
+  }
+  .green-card{
+    background:linear-gradient(120deg,#1c3f22,#274d2c);
+    border-radius:18px;
+    height:150px;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .green-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(115deg, rgba(255,255,255,0.06) 0 3px, transparent 3px 9px);
+  }
+  .green-glyph{
+    width:44px; height:44px;
+    background:#fff;
+    clip-path: polygon(20% 0%, 40% 0%, 50% 30%, 60% 0%, 80% 0%, 65% 40%, 100% 50%, 65% 60%, 80% 100%, 60% 70%, 50% 100%, 40% 70%, 20% 100%, 35% 60%, 0% 50%, 35% 40%);
+    position:relative;
+  }
+  .sparkle{
+    position:absolute;
+    color:#fff;
+    font-size:14px;
+    opacity:0.8;
+  }
+
+  .green-balance{
+    background:var(--green-panel);
+    border-radius:18px;
+    height:150px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .green-balance .top-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+  }
+  .green-balance .label{
+    font-size:12px;
+    color:#3f5a42;
+  }
+  .green-balance .amt{
+    font-size:19px;
+    font-weight:600;
+    color:#16281a;
+  }
+  .dots{ color:#6b8a6f; font-size:14px; letter-spacing:1px; }
+
+  /* text blocks below cards */
+  .block{ padding-top:0; }
+  .left-block{ padding-top:16px; }
+
+  @media(max-width:860px){
+    .grid{ grid-template-columns:1fr; }
+    nav .nav-links{ display:none; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <nav>
+    <div class="brand">
+      <span class="brand-mark">
+        <svg width="34" height="20" viewBox="0 0 34 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="10" cy="10" rx="10" ry="10" fill="#161616"/>
+          <ellipse cx="24" cy="10" rx="9" ry="9" fill="#ffffff" stroke="#161616" stroke-width="1.5"/>
+        </svg>
+      </span>
+      apro
+    </div>
+    <div class="nav-links">
+      <a href="#">Products</a>
+      <a href="#">Resources</a>
+      <a href="#">Pricing</a>
+      <a href="#">Blog</a>
+    </div>
+    <div class="nav-right">
+      <a class="login" href="#">Log in</a>
+      <button class="btn btn-outline">Request a demo</button>
+      <button class="btn btn-dark">Apply now</button>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <h1>Manage all spend and cash with Apro</h1>
+    <p>The powerful business banking platform backed by an award-winning customer support team.</p>
+  </section>
+
+  <div class="grid">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+      <div class="teal-card">
+        <div class="concrete"></div>
+        <div class="teal-texture"></div>
+        <div class="card-shape">
+          <div class="glyph"></div>
+        </div>
+        <div class="card-shape small">
+          <div class="glyph"></div>
+        </div>
+        <div class="accounts-panel">
+          <div class="row-top">
+            <span>All Accounts</span>
+            <span>⌃</span>
+          </div>
+          <div class="total">$ 254,783.37</div>
+          <div class="sub-row">
+            <div>
+              <span class="sub-label">Checking</span>
+              <span class="sub-amt">$ 34,764.42</span>
+            </div>
+            <span class="mini-x">✳</span>
+          </div>
+          <div class="sub-row">
+            <div>
+              <span class="sub-label">Checking</span>
+              <span class="sub-amt">$ 34,764.42</span>
+            </div>
+            <span class="mini-x">✳</span>
+          </div>
+        </div>
+      </div>
+      <div class="left-block">
+        <span class="pill">Send money</span>
+        <h2 class="title">Business Checking Accounts</h2>
+        <p class="desc">Manage your operating cash without annoying ACH fees and enjoy 24/7 customer support.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+      <div class="row-two">
+        <div class="tan-card">
+          <div class="tri-oval-wrap">
+            <div class="tri-pill">
+              <div class="tri"></div>
+              <div class="tri-outline-shape">
+                <svg width="26" height="22" viewBox="0 0 26 22">
+                  <polygon points="13,1 25,21 1,21" fill="none" stroke="#ffffff" stroke-width="1.6"/>
+                </svg>
+              </div>
+            </div>
+            <div class="oval-pill">
+              <div class="glyph"></div>
+            </div>
+          </div>
+        </div>
+        <div class="balance-card">
+          <div class="label">Card Balance</div>
+          <div class="bars">
+            <span style="height:10px"></span>
+            <span style="height:14px"></span>
+            <span style="height:18px"></span>
+            <span style="height:22px"></span>
+            <span style="height:26px"></span>
+            <span class="light" style="height:20px"></span>
+            <span class="light" style="height:16px"></span>
+            <span class="light" style="height:12px"></span>
+            <span class="light" style="height:8px"></span>
+          </div>
+          <div class="bal-nums">
+            <div><b>$ 7,880</b><span>Spent</span></div>
+            <div><b>$ 3,430</b><span>Remaining</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block" style="padding-top:16px;">
+        <span class="pill">Control Spend</span>
+        <h2 class="title">Business Credit Cards</h2>
+        <p class="desc">Stop non-compliant spend in real time and automate your expense accounting.</p>
+      </div>
+
+      <div class="row-three">
+        <div class="green-card">
+          <div class="green-glyph"></div>
+          <span class="sparkle" style="top:22px; left:28px;">✦</span>
+          <span class="sparkle" style="bottom:26px; right:30px; font-size:10px;">✦</span>
+        </div>
+        <div class="green-balance">
+          <div class="top-row">
+            <span class="pill green">Earn yield</span>
+          </div>
+          <h2 class="title" style="font-size:18px; margin-bottom:2px;">AproTreasury</h2>
+          <p class="desc" style="font-size:13px;">Earn up to 5.30%* yield on your cash with Apro Treasury.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
